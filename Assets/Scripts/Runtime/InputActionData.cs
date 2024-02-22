@@ -5,7 +5,6 @@ public sealed class InputActionData
 {
     public string guid;
 
-    public bool IsActive { get; set; }
     public bool IsStarted { get; set; }
     public bool IsPerformed { get; set; }
     public bool IsCanceled { get; set; }
@@ -15,7 +14,6 @@ public sealed class InputActionData
 
     public void Reset()
     {
-        IsActive = false;
         IsStarted = false;
         IsPerformed = false;
         IsCanceled = false;

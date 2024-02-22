@@ -5,12 +5,10 @@ using UnityEngine.InputSystem;
 [DefaultExecutionOrder(-1)]
 public sealed class InputObserver : MonoBehaviour
 {
-    public static InputObserver Get => (s_instance == null) 
-        ? (s_instance = FindObjectOfType<InputObserver>()) 
-        : s_instance;
-
+    public static InputObserver Get => (s_instance != null) 
+        ? s_instance : (s_instance = FindObjectOfType<InputObserver>());
     static InputObserver s_instance;
-    
+
     public InputActionAsset asset;
     public string activeMap = "Gameplay";
 
@@ -29,7 +27,7 @@ public sealed class InputObserver : MonoBehaviour
     {
         var maps = asset.actionMaps;
         m_maps = new InputMapWrapper[maps.Count];
-        
+
         for (int i = 0, i_max = maps.Count; i < i_max; i++)
         {
             m_maps[i] = new(maps[i]);
@@ -39,7 +37,7 @@ public sealed class InputObserver : MonoBehaviour
     private void InitDataMap()
     {
         m_dataMap = new();
-        
+
         foreach (var map in m_maps)
         {
             foreach (var action in map.Actions)
@@ -47,14 +45,13 @@ public sealed class InputObserver : MonoBehaviour
                 m_dataMap[action.Data.guid] = action.Data;
             }
         }
-        
     }
 
     public void SwitchMap(string mapName)
     {
         if (activeMap != mapName) ApplyMap();
     }
-    
+
     private void ApplyMap()
     {
         foreach (var map in m_maps)
@@ -70,7 +67,7 @@ public sealed class InputObserver : MonoBehaviour
             m_maps[i].OnUpdate();
         }
     }
-    
+
     public void Bind(ref InputActionData target)
         => target = m_dataMap[target.guid];
 };

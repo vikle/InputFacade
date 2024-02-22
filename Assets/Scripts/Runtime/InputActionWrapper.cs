@@ -90,7 +90,6 @@ public sealed class InputActionWrapper
 
     private void UpdateData()
     {
-        Data.IsActive = (m_phase > InputActionPhase.Waiting);
         Data.IsStarted = (m_phase == InputActionPhase.Started);
         Data.IsPerformed = (m_phase == InputActionPhase.Performed);
         Data.IsCanceled = (m_phase == InputActionPhase.Canceled);
