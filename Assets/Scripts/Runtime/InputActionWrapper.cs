@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,22 +15,14 @@ public sealed class InputActionWrapper
     public InputActionData Data { get; } = new();
     
     InputActionPhase m_phase;
-    InputActionPhase m_dirtyPhase;
     readonly EControlType m_controlType;
     readonly InputAction m_action;
 
     public InputActionWrapper(InputAction action)
     {
         enabled = action.enabled;
-        
-        m_controlType = Enum.Parse<EControlType>(action.expectedControlType);
+        m_controlType = System.Enum.Parse<EControlType>(action.expectedControlType);
         m_action = action;
-
-        m_dirtyPhase = m_phase = InputActionPhase.Waiting;
-        action.started += ctx => m_dirtyPhase = InputActionPhase.Started;
-        action.performed += ctx => m_dirtyPhase = InputActionPhase.Performed;
-        action.canceled += ctx => m_dirtyPhase = InputActionPhase.Canceled;
-
         Data.guid = action.id.ToString();
     }
     
@@ -49,51 +40,47 @@ public sealed class InputActionWrapper
 
     private void UpdatePhase()
     {
-        switch (m_dirtyPhase)
+        var next_phase = m_phase;
+        
+        if (m_action.phase < InputActionPhase.Started)
         {
-            case InputActionPhase.Performed:
-                if (m_phase <= InputActionPhase.Waiting) m_phase = InputActionPhase.Started;
-                else if (m_phase == InputActionPhase.Started) m_phase = InputActionPhase.Performed;
-                break;
-
-            case InputActionPhase.Canceled:
-                switch (m_phase)
-                {
-                    case InputActionPhase.Started:
-                        m_phase = InputActionPhase.Performed;
-                        break;
-                    case InputActionPhase.Performed:
-                        m_phase = InputActionPhase.Canceled;
-                        break;
-                    case InputActionPhase.Canceled:
-                        m_phase = InputActionPhase.Waiting;
-                        break;
-
-                    default:
-                        m_dirtyPhase = InputActionPhase.Waiting;
-                        break;
-                }
-                break;
-
-            default:
-                m_phase = m_dirtyPhase;
-                break;
+            switch (next_phase)
+            {
+                case InputActionPhase.Performed:
+                    next_phase = InputActionPhase.Canceled;
+                    break;
+                case InputActionPhase.Canceled: 
+                    next_phase = InputActionPhase.Waiting;
+                    break;
+                default: break;
+            }
         }
+        else
+        {
+            next_phase = (next_phase < InputActionPhase.Started) 
+                ? InputActionPhase.Started 
+                : InputActionPhase.Performed;
+        }
+
+        if (next_phase != m_phase)
+        {
+            Data.IsStarted = (next_phase == InputActionPhase.Started);
+            Data.IsPerformed = (next_phase == InputActionPhase.Performed);
+            Data.IsCanceled = (next_phase == InputActionPhase.Canceled);
+        }
+
+        m_phase = next_phase;
     }
 
     private void ResetData()
     {
         if (m_phase == InputActionPhase.Disabled) return;
-        m_dirtyPhase = m_phase = InputActionPhase.Disabled;
+        m_phase = InputActionPhase.Disabled;
         Data.Reset();
     }
 
     private void UpdateData()
     {
-        Data.IsStarted = (m_phase == InputActionPhase.Started);
-        Data.IsPerformed = (m_phase == InputActionPhase.Performed);
-        Data.IsCanceled = (m_phase == InputActionPhase.Canceled);
-        
         switch (m_controlType)
         {
             case EControlType.Axis:

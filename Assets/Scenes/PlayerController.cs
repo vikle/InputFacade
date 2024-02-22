@@ -14,6 +14,7 @@ public sealed class PlayerController : MonoBehaviour
 
     Transform m_transform;
     CharacterController m_controller;
+    PlayerWeapon m_weapon;
     float m_rotation;
 
 
@@ -22,7 +23,10 @@ public sealed class PlayerController : MonoBehaviour
     {
         m_transform = transform;
         m_controller = GetComponent<CharacterController>();
+        m_weapon = GetComponent<PlayerWeapon>();
 
+        m_weapon.cameraTransform = cameraTransform;
+        
         InputObserverTool.Bind(ref moveData);
         InputObserverTool.Bind(ref lookData);
         InputObserverTool.Bind(ref fireEvent);
@@ -55,18 +59,6 @@ public sealed class PlayerController : MonoBehaviour
 
     private void DoFire()
     {
-        if (fireEvent.IsStarted == false) return;
-        
-        var primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        primitive.transform.position = (cameraTransform.position + cameraTransform.right);
-        primitive.transform.localScale = (Vector3.one * .2f);
-        
-        var r_body = primitive.AddComponent<Rigidbody>();
-        r_body.AddForce(cameraTransform.forward * Random.Range(25f, 35f) 
-                      + cameraTransform.right * Random.Range(-2f, 2f) 
-                      + cameraTransform.up * Random.Range(-2f, 2f), 
-                        ForceMode.Impulse);
-        
-        Destroy(primitive, 3.5f);
+        if (fireEvent.IsStarted) m_weapon.Fire();
     }
 };
