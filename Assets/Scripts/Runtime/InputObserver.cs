@@ -10,7 +10,7 @@ public sealed class InputObserver : MonoBehaviour
     static InputObserver s_instance;
 
     public InputActionAsset asset;
-    public string activeMap = "Gameplay";
+    public string currentMap = "Gameplay";
 
     InputMapWrapper[] m_maps;
     Dictionary<string, InputActionData> m_dataMap;
@@ -49,14 +49,14 @@ public sealed class InputObserver : MonoBehaviour
 
     public void SwitchMap(string mapName)
     {
-        if (activeMap != mapName) ApplyMap();
+        if (currentMap != mapName) ApplyMap();
     }
 
     private void ApplyMap()
     {
         foreach (var map in m_maps)
         {
-            map.Enabled = (map.Name == activeMap);
+            map.Enabled = (map.Name == currentMap);
         }
     }
 
