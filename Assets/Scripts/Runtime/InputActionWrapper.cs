@@ -12,18 +12,18 @@ public sealed class InputActionWrapper
 {
     public bool enabled;
 
-    public InputActionData Data { get; } = new();
+    public InputActionData Data { get; }
     
     InputActionPhase m_phase;
-    readonly EControlType m_controlType;
     readonly InputAction m_action;
+    readonly EControlType m_controlType;
 
     public InputActionWrapper(InputAction action)
     {
+        m_action = action;
         enabled = action.enabled;
         m_controlType = System.Enum.Parse<EControlType>(action.expectedControlType);
-        m_action = action;
-        Data.guid = action.id.ToString();
+        Data = new() { guid = action.id.ToString() };
     }
     
     public void OnUpdate()
@@ -50,8 +50,9 @@ public sealed class InputActionWrapper
                     next_phase = InputActionPhase.Canceled;
                     break;
                 case InputActionPhase.Canceled: 
-                    next_phase = InputActionPhase.Waiting;
-                    break;
+                    m_phase = InputActionPhase.Waiting;
+                    Data.Reset();
+                    return;
                 default: break;
             }
         }
@@ -81,6 +82,8 @@ public sealed class InputActionWrapper
 
     private void UpdateData()
     {
+        if (m_phase < InputActionPhase.Started) return;
+        
         switch (m_controlType)
         {
             case EControlType.Axis:
