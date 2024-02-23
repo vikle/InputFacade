@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEngine.InputSystem;
 
 public enum EControlType : byte
@@ -65,34 +64,24 @@ public sealed class InputActionWrapper
 
         if (next_phase != m_phase)
         {
-            Data.IsStarted = (next_phase == InputActionPhase.Started);
-            Data.IsPerformed = (next_phase == InputActionPhase.Performed);
-            Data.IsCanceled = (next_phase == InputActionPhase.Canceled);
+            Data.UpdateState(next_phase);
         }
 
         m_phase = next_phase;
     }
 
+    private void UpdateData()
+    {
+        if (m_phase >= InputActionPhase.Started)
+        {
+            Data.UpdateValue(m_action, m_controlType);
+        }
+    }
+    
     private void ResetData()
     {
         if (m_phase == InputActionPhase.Disabled) return;
         m_phase = InputActionPhase.Disabled;
         Data.Reset();
-    }
-
-    private void UpdateData()
-    {
-        if (m_phase < InputActionPhase.Started) return;
-        
-        switch (m_controlType)
-        {
-            case EControlType.Axis:
-                Data.AxisValue = m_action.ReadValue<float>();
-                break;
-            case EControlType.Vector2: 
-                Data.Vector2Value = m_action.ReadValue<Vector2>();
-                break;
-            default: break;
-        }
     }
 };
