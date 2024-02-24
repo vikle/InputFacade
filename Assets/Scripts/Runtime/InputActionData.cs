@@ -6,6 +6,7 @@ public sealed class InputActionData
 {
     public string guid;
 
+    public bool IsActive { get; private set; }
     public bool IsStarted { get; private set; }
     public bool IsPerformed { get; private set; }
     public bool IsCanceled { get; private set; }
@@ -16,6 +17,7 @@ public sealed class InputActionData
 
     public void UpdateState(InputActionPhase phase)
     {
+        IsActive = (phase > InputActionPhase.Waiting);
         IsStarted = (phase == InputActionPhase.Started);
         IsPerformed = (phase == InputActionPhase.Performed);
         IsCanceled = (phase == InputActionPhase.Canceled);
