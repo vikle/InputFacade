@@ -20,6 +20,8 @@ public sealed class PlayerWeapon : MonoBehaviour
     bool m_autoFireReady;
     float m_fireInterval;
 
+    GameCore m_gameCore;
+    
     void Awake()
     {
         m_autoFireReady = true;
@@ -29,6 +31,8 @@ public sealed class PlayerWeapon : MonoBehaviour
 
     void Update()
     {
+        if (GameCore.Get.IsPaused) return;
+        
         if (fireModeEvent.IsStarted)
         {
             m_autoFire = !m_autoFire;

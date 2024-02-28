@@ -32,6 +32,8 @@ public sealed class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (GameCore.Get.IsPaused) return;
+        
         DoMove();
         DoLook();
         DoRun();

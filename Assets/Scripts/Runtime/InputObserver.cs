@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[DefaultExecutionOrder(-1)]
+[DefaultExecutionOrder(-100)]
 public sealed class InputObserver : MonoBehaviour
 {
     public static InputObserver Get => (s_instance != null) 
@@ -49,7 +49,9 @@ public sealed class InputObserver : MonoBehaviour
 
     public void SwitchMap(string mapName)
     {
-        if (currentMap != mapName) ApplyMap();
+        if (currentMap == mapName) return;
+        currentMap = mapName;
+        ApplyMap();
     }
 
     private void ApplyMap()
