@@ -12,8 +12,9 @@ public sealed class InputObserver : MonoBehaviour
     public InputActionAsset asset;
     public string currentMap = "Gameplay";
 
-    InputMapWrapper[] m_maps;
     Dictionary<string, InputActionData> m_dataMap;
+
+    public InputMapWrapper[] Maps { get; private set; }
 
     void Awake()
     {
@@ -26,11 +27,11 @@ public sealed class InputObserver : MonoBehaviour
     private void InitInputMaps()
     {
         var maps = asset.actionMaps;
-        m_maps = new InputMapWrapper[maps.Count];
+        Maps = new InputMapWrapper[maps.Count];
 
         for (int i = 0, i_max = maps.Count; i < i_max; i++)
         {
-            m_maps[i] = new(maps[i]);
+            Maps[i] = new(maps[i]);
         }
     }
 
@@ -38,7 +39,7 @@ public sealed class InputObserver : MonoBehaviour
     {
         m_dataMap = new();
 
-        foreach (var map in m_maps)
+        foreach (var map in Maps)
         {
             foreach (var action in map.Actions)
             {
@@ -56,17 +57,17 @@ public sealed class InputObserver : MonoBehaviour
 
     private void ApplyMap()
     {
-        foreach (var map in m_maps)
+        foreach (var map in Maps)
         {
-            map.Enabled = (map.Name == currentMap);
+            map.Enabled = (map.Map.name == currentMap);
         }
     }
 
     void Update()
     {
-        for (int i = 0, i_max = m_maps.Length; i < i_max; i++)
+        for (int i = 0, i_max = Maps.Length; i < i_max; i++)
         {
-            m_maps[i].OnUpdate();
+            Maps[i].OnUpdate();
         }
     }
 

@@ -39,9 +39,7 @@ public sealed class InputActionData
     
     public void Reset()
     {
-        IsStarted = false;
-        IsPerformed = false;
-        IsCanceled = false;
+        UpdateState(InputActionPhase.Disabled);
         AxisValue = 0f;
         Vector2Value = Vector2.zero;
     }

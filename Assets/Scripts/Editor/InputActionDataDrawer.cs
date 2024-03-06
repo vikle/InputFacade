@@ -10,8 +10,6 @@ public sealed class InputActionDataDrawer : PropertyDrawer
 
     private void Init()
     {
-        if (m_guids != null) return;
-
         var observer = InputObserver.Get;
         var asset = (observer != null) ? observer.asset : null;
         if (asset == null) return;
@@ -22,7 +20,7 @@ public sealed class InputActionDataDrawer : PropertyDrawer
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
-        Init();
+        if (m_guids == null) Init();
         
         EditorGUI.BeginProperty(position, label, property);
         position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
